@@ -32,14 +32,19 @@ const List<String> cryptoList = [
 ];
 
 const apiKey = '822FA268-98C2-4A54-BC11-EFE65581AF21';
-const coinApiURL = 'http://rest.coinapi.io/v1/exchangerate';
+const coinAPIURL = 'http://rest.coinapi.io/v1/exchangerate';
 
 class CoinData {
-  Future getCurrencyPrice({String crypto, String currency}) async {
-    var url = '$coinApiURL/$crypto/$currency?apikey=$apiKey';
-    NetworkHelper networkHelper = NetworkHelper(url);
+  Future getCurrencyPrice(String selectedCurrency) async {
+    Map<String, String> cryptoPrices = {};
+    for (String crypto in cryptoList) {
+      String url = '$coinAPIURL/$crypto/$selectedCurrency?apikey=$apiKey';
+      NetworkHelper networkHelper = NetworkHelper(url);
 
-    var priceData = await networkHelper.getData();
-    return priceData['rate'];
+      var decodedData = await networkHelper.getData();
+      double lastPrice = decodedData['rate'];
+      cryptoPrices[crypto] = lastPrice.toStringAsFixed(0);
+    }
+    return cryptoPrices;
   }
 }
